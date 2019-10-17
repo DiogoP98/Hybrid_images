@@ -1,17 +1,16 @@
 import sys
 import cv2
 import numpy as np
+import os
 from skimage import io, color
 import MyConvolution
 
 def main():
     image = cv2.imread('data/cat.bmp')
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    kernel = np.array([[0,-1,0],[-1,5,-1],[0,-1,0]])
-    convolved = MyConvolution.convolve(gray, kernel)
-    cv2.imshow('image',convolved)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()    
+    kernel = np.array([[1/81]*9,[1/81]*9,[1/81]*9,[1/81]*9,[1/81]*9,[1/81]*9,[1/81]*9,[1/81]*9,[1/81]*9])
+    convolved = MyConvolution.convolve(image, kernel)
+    print(convolved.shape)
+    cv2.imwrite('data/cat_colour_1_81.bmp', convolved) 
 
 if __name__ == '__main__':
 	main()
