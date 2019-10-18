@@ -11,21 +11,14 @@ def convolve_function(image: np.ndarray, kernel: np.ndarray) -> np.ndarray:
 
 	zeros_x_vector = np.zeros((image.shape[0]))
 	zeros_y_vector = np.zeros((image.shape[1]))
-	#print(image)
 
-
+	#Create image with borders
 	image_padding = np.zeros((imagedim[0]+xborder, imagedim[1]+yborder))
-	
-	for x in range(imagedim[0]):
-		for y in range(imagedim[1]):
-			image_padding[x+int(xborder/2),y+int(yborder/2)] = image[x][y] 
-	print(image_padding)
+	image_padding[int(xborder/2):-int(xborder/2),int(yborder/2):-int(yborder/2)] = image
 
 	for x in range(yborder + 1, imagedim[1] - yborder):
 		for y in range(xborder + 1, imagedim[0] - xborder):
 			convolution[y, x] = (kernel * image_padding[y:y + kerneldim[1], x:x + kerneldim[0]]).sum()
-	
-	#print(convolution)
 
 	return convolution
 

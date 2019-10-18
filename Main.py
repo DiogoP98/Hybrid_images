@@ -10,7 +10,7 @@ def main():
     kernel = np.array([[1/81]*9,[1/81]*9,[1/81]*9,[1/81]*9,[1/81]*9,[1/81]*9,[1/81]*9,[1/81]*9,[1/81]*9])
     convolved = MyConvolution.convolve(image, kernel)
     print(convolved.shape)
-    cv2.imwrite('data/cat_colour_1_81.bmp', convolved) 
+    #cv2.imwrite('data/cat_colour_1_81.bmp', convolved) 
 
 if __name__ == '__main__':
 	main()
