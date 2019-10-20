@@ -26,8 +26,13 @@ def myHybridImages(lowImage: np.ndarray, lowSigma: float, highImage: np.ndarray,
            a Gaussian of s.d. highSigma. The resultant image has the same size as the input images.
     :rtype numpy.ndarray
     """
+    low_freq_kernel = makeGaussianKernel(lowSigma)
+    low_freq_image = convolve(lowImage,low_freq_kernel)
 
-    # Your code here.
+    high_freq_kernel = makeGaussianKernel(highSigma)
+    high_freq_image = highImage - convolve(highImage,high_freq_kernel)
+    
+    return low_freq_image + high_freq_image
     
 
 def makeGaussianKernel(sigma: float) -> np.ndarray:
@@ -37,4 +42,17 @@ def makeGaussianKernel(sigma: float) -> np.ndarray:
     floor(8*sigma+1)+1 (whichever is odd) as per the assignment specification.
     """
 
-    # Your code here.
+    size = int(np.floor(8.0 * sigma + 1.0)); # (this implies the window is +/- 4 sigmas from the centre of the Gaussian)
+    if size % 2 == 0:
+        size+= 1; # size must be odd
+    
+    kernel = np.empty([size,size], dtype = float)
+
+    sigma_squared = sigma**2
+
+    for x in range(size):
+        for y in range(size):
+            kernel[x,y] = 1/(2*math.pi*sigma_squared)
+            kernel[x,y] *= math.e**(-(x**2+y**2)/(2*sigma_squared))
+
+    return kernel
