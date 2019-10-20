@@ -1,31 +1,5 @@
 import numpy as np
 
-def convolve_function(image: np.ndarray, kernel: np.ndarray) -> np.ndarray:
-	convolution = np.empty_like(image)
-
-	imagedim = image.shape
-	kerneldim = kernel.shape
-
-	xborder = int(np.floor(kerneldim[0]/2))
-	yborder = int(np.floor(kerneldim[1]/2))
-
-	zeros_x_vector = np.zeros((image.shape[0]))
-	zeros_y_vector = np.zeros((image.shape[1]))
-
-	#Create image with borders
-	image_padding = np.zeros((imagedim[0]+xborder*2, imagedim[1]+yborder*2))
-	image_padding[xborder:-xborder,yborder:-yborder] = image
-
-	for x in range(yborder + 1, imagedim[1] - yborder):
-		for y in range(xborder + 1, imagedim[0] - xborder):
-			convolution[y, x] = (kernel * image_padding[y:y + kerneldim[1], x:x + kerneldim[0]]).sum()
-
-	return convolution
-
-def convolve_colour(image: np.ndarray, kernel: np.ndarray) -> np.ndarray:
-	convolution = np.zeros_like(image)
-	return np.array()
-
 #width of the border equals half the size of the template
 def convolve(image: np.ndarray, kernel: np.ndarray) -> np.ndarray:
 	"""
@@ -40,23 +14,40 @@ def convolve(image: np.ndarray, kernel: np.ndarray) -> np.ndarray:
 	:returns the convolved image (of the same shape as the input image)
 	:rtype numpy.ndarray
 	"""
-	# Your code here. You'll need to vectorise your implementation to ensure it runs
-	# at a reasonable speed.
 	
-	if len(image.shape) < 3: #gray
-		return convolve_function(image, kernel)
-	elif len(image.shape) == 3: #colour
-		print(image[:,:,0].shape)
-		convolved_channel1 = convolve_function(image[:,:,0], kernel)
-		convolved_channel2 = convolve_function(image[:,:,1], kernel)
-		convolved_channel3 = convolve_function(image[:,:,2], kernel)
+	colour_image = False
+	
+	if len(image.shape) == 3: #colour
+		colour_image = True
+		imagerows, imagecols, channels = image.shape
+		convolution = np.zeros((imagerows, imagecols, channels))
+	else: 
+		imagerows, imagecols = image.shape
+		convolution = np.zeros((imagerows, imagecols))
+	
+	kernelrows, kernelcols = kernel.shape
 
-		#print(convolved_channel1)
-		convolved_image = np.zeros((image.shape[0], image.shape[1], image.shape[2]))
+	xborder = int(np.floor(kernelrows/2))
+	yborder = int(np.floor(kernelcols/2))
 
-		for x in range(image.shape[0]):
-			for y in range(image.shape[1]):
-				convolved_image[x,y] = [convolved_channel1[x][y],convolved_channel2[x][y],convolved_channel3[x][y]]
-		
-		return convolved_image
+	#Create image with borders
+	if colour_image:
+		image_padding = np.zeros((imagerows+xborder*2, imagecols+yborder*2, channels))
+	else:
+		image_padding = np.zeros((imagerows+xborder*2, imagecols+yborder*2))
+	
+	image_padding[xborder:-xborder,yborder:-yborder] = image
+
+	kernel = np.flip(kernel, axis = 0)
+	kernel = np.flip(kernel, axis = 1)
+
+	for x in range(yborder, imagecols - yborder):
+		for y in range(xborder, imagerows - xborder):
+			if colour_image:
+				for colour in range(3):
+					convolution[y, x, colour] = (kernel * image_padding[y - xborder: y + kernelrows - xborder, x - yborder: x + kernelcols - yborder, colour]).sum()
+			else:
+	 			convolution[y, x] = (kernel * image_padding[y - xborder: y + kernelrows - xborder, x - yborder: x + kernelcols - yborder]).sum()
+
+	return convolution
 	

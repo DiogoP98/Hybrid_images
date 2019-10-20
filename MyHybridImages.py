@@ -1,5 +1,6 @@
 import math
 import numpy as np
+import cv2
 
 from MyConvolution import convolve
 
@@ -27,12 +28,15 @@ def myHybridImages(lowImage: np.ndarray, lowSigma: float, highImage: np.ndarray,
     :rtype numpy.ndarray
     """
     low_freq_kernel = makeGaussianKernel(lowSigma)
-    low_freq_image = convolve(lowImage,low_freq_kernel)
+    low_pass = convolve(lowImage,low_freq_kernel)
 
     high_freq_kernel = makeGaussianKernel(highSigma)
-    high_freq_image = highImage - convolve(highImage,high_freq_kernel)
+    high_pass = convolve(highImage,high_freq_kernel) - highImage
     
-    return low_freq_image + high_freq_image
+    cv2.imwrite('results/lowpass_dog2.bmp', low_pass)
+    cv2.imwrite('results/highpass_cat.bmp', high_pass) 
+
+    return low_pass + high_pass
     
 
 def makeGaussianKernel(sigma: float) -> np.ndarray:
@@ -48,11 +52,17 @@ def makeGaussianKernel(sigma: float) -> np.ndarray:
     
     kernel = np.empty([size,size], dtype = float)
 
-    sigma_squared = sigma**2
+    sigma_squared = float(sigma**2)
+    multiplier = float(1/(2*math.pi*sigma_squared))
+    divider = float(2*sigma_squared)
 
+    sum = 0.0
     for x in range(size):
-        for y in range(size):
-            kernel[x,y] = 1/(2*math.pi*sigma_squared)
-            kernel[x,y] *= math.e**(-(x**2+y**2)/(2*sigma_squared))
+         for y in range(size):
+             kernel[x,y] = float(multiplier * math.e**(-(x**2+y**2)/divider))
+             sum += kernel[x,y]
+    
+    #normalize kernel
+    kernel /= sum
 
     return kernel
