@@ -20,7 +20,7 @@ def main():
     #print(kernel)
     #print(convolved.shape)
     #print(gray.shape)
-    cv2.imwrite('data/hybrid_2.bmp', hybrid1) 
+    cv2.imwrite('results/hybrid_2.bmp', hybrid1) 
 
 if __name__ == '__main__':
 	main()
