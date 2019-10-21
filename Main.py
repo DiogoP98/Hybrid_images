@@ -13,6 +13,7 @@ kernel_9 = np.array([[1/81]*9,[1/81]*9,[1/81]*9,[1/81]*9,[1/81]*9,[1/81]*9,[1/81
 def main():
     image = cv2.imread('data/dog.bmp')
     image2 = cv2.imread('data/cat.bmp')
+    #x = MyConvolution.fourier_convolve(image, kernel_9)
     #gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     #gray2 = cv2.cvtColor(image2, cv2.COLOR_BGR2GRAY)
     #cv2.imwrite('data/einstein_gray.bmp', gray)
@@ -25,7 +26,7 @@ def main():
     #print(kernel)
     #print(convolved.shape)
     #print(gray.shape)
-    cv2.imwrite('results/hybrid_9.bmp', hybrid1) 
+    cv2.imwrite('results/hybrid_9.bmp', hybrid1)
 
 if __name__ == '__main__':
 	main()

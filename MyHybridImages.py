@@ -31,12 +31,23 @@ def myHybridImages(lowImage: np.ndarray, lowSigma: float, highImage: np.ndarray,
     low_pass = convolve(lowImage,low_freq_kernel)
 
     high_freq_kernel = makeGaussianKernel(highSigma)
-    high_pass = convolve(highImage,high_freq_kernel) - highImage
+    high_pass = highImage - convolve(highImage,high_freq_kernel)
     
     cv2.imwrite('results/lowpass_dog2.bmp', low_pass)
-    cv2.imwrite('results/highpass_cat.bmp', high_pass) 
+    cv2.imwrite('results/highpass_cat.bmp', high_pass + 0.5) 
+    
+    xborder_low = int(np.floor(low_freq_kernel.shape[0]/2))
+    yborder_low = int(np.floor(low_freq_kernel.shape[1]/2))
 
-    return low_pass + high_pass
+    xborder_high = int(np.floor(high_freq_kernel.shape[0]/2))
+    yborder_high = int(np.floor(high_freq_kernel.shape[1]/2))
+
+    #put black border
+    hybrid_image = np.zeros(highImage.shape)
+    sum = low_pass[xborder_low + 1:-xborder_low - 1,yborder_low + 1:-yborder_low - 1] + high_pass[xborder_high + 1:-xborder_high - 1,yborder_high + 1:-yborder_high - 1]
+    hybrid_image[xborder_high + 1:-xborder_high - 1,yborder_high + 1:-yborder_high - 1] = sum
+
+    return hybrid_image
     
 
 def makeGaussianKernel(sigma: float) -> np.ndarray:
