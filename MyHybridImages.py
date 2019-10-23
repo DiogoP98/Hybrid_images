@@ -3,6 +3,7 @@ import numpy as np
 import cv2
 
 from MyConvolution import convolve
+from MyConvolution import fourier_convolve
 
 
 def myHybridImages(lowImage: np.ndarray, lowSigma: float, highImage: np.ndarray, highSigma: float) -> np.ndarray:
@@ -27,27 +28,32 @@ def myHybridImages(lowImage: np.ndarray, lowSigma: float, highImage: np.ndarray,
            a Gaussian of s.d. highSigma. The resultant image has the same size as the input images.
     :rtype numpy.ndarray
     """
+
+    fourier = True
+
     low_freq_kernel = makeGaussianKernel(lowSigma)
-    low_pass = convolve(lowImage,low_freq_kernel)
+    if fourier:
+        low_pass = fourier_convolve(lowImage,low_freq_kernel)
+    else:
+        low_pass = convolve(lowImage,low_freq_kernel)
 
     high_freq_kernel = makeGaussianKernel(highSigma)
-    high_pass = highImage - convolve(highImage,high_freq_kernel)
+
+    if fourier:
+        high_pass = highImage - fourier_convolve(highImage,high_freq_kernel)
+    else:
+        xborder_high = int(np.floor(high_freq_kernel.shape[0]/2))
+        yborder_high = int(np.floor(high_freq_kernel.shape[1]/2))
+        
+        #put black border
+        high_pass = np.zeros(highImage.shape)
+        diff = highImage[xborder_high + 1:-xborder_high - 1,yborder_high + 1:-yborder_high - 1] - convolve(highImage,high_freq_kernel)[xborder_high + 1:-xborder_high - 1,yborder_high + 1:-yborder_high - 1]
+        high_pass[xborder_high + 1:-xborder_high - 1,yborder_high + 1:-yborder_high - 1] = diff
     
-    cv2.imwrite('results/lowpass_dog2.bmp', low_pass)
-    cv2.imwrite('results/highpass_cat.bmp', high_pass + 0.5) 
-    
-    xborder_low = int(np.floor(low_freq_kernel.shape[0]/2))
-    yborder_low = int(np.floor(low_freq_kernel.shape[1]/2))
+    cv2.imwrite('results/lowpass_dog_fourier.bmp', low_pass)
+    cv2.imwrite('results/highpass_cat_fourier.bmp', high_pass + 0.5) 
 
-    xborder_high = int(np.floor(high_freq_kernel.shape[0]/2))
-    yborder_high = int(np.floor(high_freq_kernel.shape[1]/2))
-
-    #put black border
-    hybrid_image = np.zeros(highImage.shape)
-    sum = low_pass[xborder_low + 1:-xborder_low - 1,yborder_low + 1:-yborder_low - 1] + high_pass[xborder_high + 1:-xborder_high - 1,yborder_high + 1:-yborder_high - 1]
-    hybrid_image[xborder_high + 1:-xborder_high - 1,yborder_high + 1:-yborder_high - 1] = sum
-
-    return hybrid_image
+    return low_pass + high_pass
     
 
 def makeGaussianKernel(sigma: float) -> np.ndarray:

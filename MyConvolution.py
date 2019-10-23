@@ -77,21 +77,28 @@ def fourier_convolve(image: np.ndarray, kernel: np.ndarray) -> np.ndarray:
 	
 	kernelrows, kernelcols = kernel.shape
 
-	xborder = int(np.floor(kernelrows/2))
-	yborder = int(np.floor(kernelcols/2))
+	xborder = int(np.floor((imagerows - kernelrows)/2))
+	yborder = int(np.floor((imagecols - kernelcols)/2))
 
-	widthpad, heightPad = xborder * 2 + kernelrows, yborder * 2 + kernelcols
-
-	#Create kernel with borders
-	kernel_padding = np.zeros((widthpad, heightPad))
-
+	#flip kernel
 	kernel = np.flip(kernel, axis = 0)
 	kernel = np.flip(kernel, axis = 1)
 
-	kernel_padding[xborder: -xborder, yborder: -yborder] = kernel
+	#create kernel with same size as image
+	kernel_padding = np.zeros([imagerows, imagecols])
+	kernel_padding[xborder:xborder + kernelrows, yborder: yborder + kernelcols] = kernel
 
-	imageTransform = np.fft.fft2(image)
-	kernelTransform = np.fft.fft2(kernel_padding)
+	convolution = np.empty_like(image)
+
+	if not colour_image:
+		imageTransform = np.fft.rfft2(image)
+		kernelTransform = np.fft.rfft2(kernel_padding)
+		convolution = np.fft.irfft2(imageTransform * kernelTransform)
+	else:
+		for colours in range(3):
+			imageTransform = np.fft.rfft2(image[:,:,colours])
+			kernelTransform = np.fft.rfft2(kernel_padding)
+			convolution[:,:,colours] = np.fft.fftshift(np.fft.irfft2(imageTransform * kernelTransform))
 
 	return convolution
 	

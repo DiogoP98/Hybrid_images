@@ -26,7 +26,7 @@ def main():
     #print(kernel)
     #print(convolved.shape)
     #print(gray.shape)
-    cv2.imwrite('results/hybrid_9.bmp', hybrid1)
+    cv2.imwrite('results/hybrid_fourier.bmp', hybrid1)
 
 if __name__ == '__main__':
 	main()
