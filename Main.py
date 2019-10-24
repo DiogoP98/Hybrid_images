@@ -22,11 +22,11 @@ def main():
     #kernel = MyHybridImages.makeGaussianKernel(1.2)
     #cv2.imwrite('results/einstein_gray_convolved.bmp', MyConvolution.convolve(gray, kernel))
     #cv2.imwrite('results/marilyn_gray_convolved.bmp', MyConvolution.convolve(gray2, kernel))
-    hybrid1 = MyHybridImages.myHybridImages(image, 6, image2, 6)
+    hybrid1 = MyHybridImages.myHybridImages(image, 4, image2, 4)
     #print(kernel)
     #print(convolved.shape)
     #print(gray.shape)
-    cv2.imwrite('results/hybrid_fourier.bmp', hybrid1)
+    cv2.imwrite('results/hybrid.bmp', hybrid1)
 
 if __name__ == '__main__':
 	main()
