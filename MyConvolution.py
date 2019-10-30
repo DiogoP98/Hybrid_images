@@ -38,6 +38,7 @@ def convolve(image: np.ndarray, kernel: np.ndarray) -> np.ndarray:
 	
 	image_padding[xborder:-xborder,yborder:-yborder] = image
 
+	#flip the kernel
 	kernel = np.flip(kernel, axis = 0)
 	kernel = np.flip(kernel, axis = 1)
 
@@ -47,6 +48,6 @@ def convolve(image: np.ndarray, kernel: np.ndarray) -> np.ndarray:
 				for colour in range(3):
 					convolution[x - xborder, y - yborder, colour] = (kernel * image_padding[x - xborder: x + xborder + 1, y - yborder: y + yborder + 1, colour]).sum()
 			else:
-	 			convolution[x, y] = (kernel * image_padding[y - xborder: y + kernelrows - xborder, x - yborder: x + kernelcols - yborder]).sum()
+	 			convolution[x- xborder, y - yborder] = (kernel * image_padding[x - xborder: x + xborder + 1, y - yborder: y + yborder + 1]).sum()
 	
 	return convolution
