@@ -28,6 +28,7 @@ def myHybridImages(lowImage: np.ndarray, lowSigma: float, highImage: np.ndarray,
     :rtype numpy.ndarray
     """
 
+    #normalize each image
     lowImage = lowImage.astype(float)
     highImage = highImage.astype(float)
     lowImage /= 255
@@ -39,8 +40,8 @@ def myHybridImages(lowImage: np.ndarray, lowSigma: float, highImage: np.ndarray,
     high_freq_kernel = makeGaussianKernel(highSigma)
     high_pass = highImage - convolve(highImage,high_freq_kernel)
 
-    cv2.imwrite('results/dog_lowpass_gray.bmp',  low_pass * 255)
-    cv2.imwrite('results/cat_highpass_gray.bmp', (high_pass + 0.5) * 255)
+    cv2.imwrite('results/dog_lowpass_gray_2.bmp',  low_pass * 255)
+    cv2.imwrite('results/cat_highpass_gray_2.bmp', (high_pass + 0.5) * 255)
 
     return (low_pass + high_pass) * 255
     

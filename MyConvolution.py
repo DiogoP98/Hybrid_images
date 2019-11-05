@@ -17,16 +17,17 @@ def convolve(image: np.ndarray, kernel: np.ndarray) -> np.ndarray:
 	
 	colour_image = False
 	
-	if len(image.shape) == 3: #colour
+	if len(image.shape) == 3: #colour image
 		colour_image = True
 		imagerows, imagecols, channels = image.shape
 		convolution = np.zeros((imagerows, imagecols, channels), dtype = float)
-	else: 
+	else: #gray image
 		imagerows, imagecols = image.shape
 		convolution = np.zeros((imagerows, imagecols), dtype = float)
 	
 	kernelrows, kernelcols = kernel.shape
 
+	#get size of each border for image padding
 	xborder = int(np.floor(kernelrows/2))
 	yborder = int(np.floor(kernelcols/2))
 
@@ -45,9 +46,9 @@ def convolve(image: np.ndarray, kernel: np.ndarray) -> np.ndarray:
 	for x in range(xborder, imagerows + xborder):
 		for y in range(yborder, imagecols + yborder):
 			if colour_image:
-				for colour in range(3):
-					convolution[x - xborder, y - yborder, colour] = (kernel * image_padding[x - xborder: x + xborder + 1, y - yborder: y + yborder + 1, colour]).sum()
+				for colour in range(3): #go through each colour channel
+					convolution[x - xborder, y - yborder, colour] = np.multiply(kernel,image_padding[x - xborder: x + xborder + 1, y - yborder: y + yborder + 1, colour]).sum()
 			else:
-	 			convolution[x- xborder, y - yborder] = (kernel * image_padding[x - xborder: x + xborder + 1, y - yborder: y + yborder + 1]).sum()
+	 			convolution[x- xborder, y - yborder] = np.multiply(kernel,image_padding[x - xborder: x + xborder + 1, y - yborder: y + yborder + 1]).sum()
 	
 	return convolution
